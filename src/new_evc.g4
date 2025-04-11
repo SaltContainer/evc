@@ -13,9 +13,24 @@ prog                    : script* ;
 
 /*
  * Script
- * A label and one or more instructions
+ * A label and one or more expressions
  */
-script                  : label instruction+ ;
+script                  : label expression+ ;
+
+/*
+ * Script label
+ * A name and a colon
+ * Ex: ev_dummy:, EV_DUMMY:, script_5:
+ */
+label                   : NAME ':' ;
+
+/*
+ * Expression
+ * An instruction, if statement, or switch statement
+ */
+expression              : instruction
+                        | if_statement
+                        | switch_statement ;
 
 /*
  * Instruction
@@ -25,11 +40,58 @@ script                  : label instruction+ ;
 instruction             : command argument_list ;
 
 /*
- * Script label
- * A name and a colon
- * Ex: ev_dummy:, EV_DUMMY:, script_5:
+ * If statement
+ * An if, open parenthesis, condition, closed parenthesis, open curly bracket, one or more expressions, and closed curly bracket
+ * Ex: if (#3210) { _OBJ_DEL('NURSE') }
  */
-label                   : NAME ':' ;
+if_statement            : 'if' '(' condition ')' '{' expression+ '}' ;
+
+/*
+ * Switch statement
+ * A switch, open parenthesis, work, closed parenthesis, open curly bracket, one or more case statements, and closed curly bracket
+ * Ex: switch (#3210) { case 0: _OBJ_DEL('NURSE') break }
+ */
+switch_statement        : 'switch' '(' work ')' '{' case_statement+ '}' ;
+
+/*
+ * Case statement
+ * A case, float, colon, one or more expressions, and break
+ * Ex: case 0: _OBJ_DEL('NURSE') break
+ */
+case_statement          : 'case' float ':' expression+ 'break' ;
+
+/*
+ * Condition
+ * A flag condition or comparison condition
+ * Ex: #3402, @SCWK_ANSWER < 4.3
+ */
+condition               : flag_condition
+                        | comparison_condition ;
+
+/*
+ * Flag condition
+ * An optional exclamation point and flag
+ * Ex: !#934, #FV_R224_MAI
+ */
+flag_condition          : '!'? flag ;
+
+/*
+ * Comparison condition
+ * A work or float, comparison operator, and work or float
+ * Ex: @SCWK_ANSWER < 4.3
+ */
+comparison_condition    : (work | float) comparison_operator (work | float) ;
+
+/*
+ * Comparison condition
+ * Greater than, less than, greater than or equal, less than or equal, equal, or not equal
+ */
+comparison_operator     : '>'
+                        | '<'
+                        | '>='
+                        | '<='
+                        | '=='
+                        | '!=' ;
 
 /*
  * Argument list

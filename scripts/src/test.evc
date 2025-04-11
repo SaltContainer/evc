@@ -8,12 +8,21 @@ ev_z80r0101_obj01:
 	_GET_POKETCH()
 	_LDVAL(@53, 2) ; Loads value into work
 	_POKETCH_ADD(0)
-	_POKETCH_ADD(1)
-	_POKETCH_ADD(3)
-	_POKETCH_ADD(4)
+    if (@SCWK_ANSWER < @200)
+    {
+	    _SYS_FLAG_BADGE_SET($125)
+    }
 	_POKETCH_ADD(19) ; HM App
-	_SYS_FLAG_BADGE_SET($124) 
-	_SYS_FLAG_BADGE_SET($125)
+    switch (@400)
+    {
+        case 0:
+        _SYS_FLAG_BADGE_SET($124)
+        break
+
+        case 1:
+        _SYS_FLAG_BADGE_SET($301)
+        break
+    }
 	; Work is indicated with a @
 	; Flags are indicated with a #
 	; Sys Flags are indicated with a $
